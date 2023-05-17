@@ -6,6 +6,5 @@
         public DateTime DateStart { get; set; }
         public DateTime DateEnd { get; set; }
         public int UserId { get; set; }
-        public virtual User User { get; set; } 
     }
 }

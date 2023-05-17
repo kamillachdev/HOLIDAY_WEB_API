@@ -4,6 +4,6 @@ namespace HOLIDAY_WEB_API.Services
 {
     public interface IRequestServices
     {
-        public List<User> GetAllRequests();
+        public List<Request> GetAllRequests();
     }
 }

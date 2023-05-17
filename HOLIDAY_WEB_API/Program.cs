@@ -1,6 +1,7 @@
 using HOLIDAY_WEB_API.data_access;
 using HOLIDAY_WEB_API.Services;
 using Microsoft.EntityFrameworkCore;
+using Classes;
 
 namespace HOLIDAY_WEB_API
 {
@@ -20,6 +21,19 @@ namespace HOLIDAY_WEB_API
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<IRequestServices, RequestServices>();
 
+            var provider = builder.Services.BuildServiceProvider();
+            var configuration = provider.GetRequiredService<IConfiguration>();  
+
+            builder.Services.AddCors(options =>
+            {
+                var frontendURL = configuration.GetValue<string>("frontend_url");
+
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+                });
+            });
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -28,6 +42,8 @@ namespace HOLIDAY_WEB_API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors();
 
             app.UseAuthorization();
 

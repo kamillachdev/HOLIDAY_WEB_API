@@ -4,8 +4,7 @@ using HOLIDAY_WEB_API.Models;
 namespace HOLIDAY_WEB_API.Services
 {
 
-    //TO DO, NOT WORKING
-    /*public class RequestServices : IRequestServices
+    public class RequestServices : IRequestServices
     {
         private readonly UserDbContext _dbCOntext;
         public RequestServices(UserDbContext dbContext)
@@ -19,5 +18,4 @@ namespace HOLIDAY_WEB_API.Services
             return requests;
         }
     }
-    */
 }

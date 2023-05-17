@@ -1,5 +1,4 @@
 ﻿using HOLIDAY_WEB_API.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HOLIDAY_WEB_API.Controllers
