@@ -10,6 +10,5 @@ namespace HOLIDAY_WEB_API.data_access
         public DbSet<User> Users { set; get; }
 
         public DbSet<Request> Requests { set; get; }
-
     }
 }

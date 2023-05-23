@@ -20,6 +20,8 @@ namespace HOLIDAY_WEB_API
             builder.Services.AddDbContext<UserDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("UserConnection")));
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<IRequestServices, RequestServices>();
+            builder.Services.AddScoped<IAuthDL, AuthDL>();
+            //builder.Services.AddDbContext<>
 
             var provider = builder.Services.BuildServiceProvider();
             var configuration = provider.GetRequiredService<IConfiguration>();  
