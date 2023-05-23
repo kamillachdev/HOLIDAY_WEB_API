@@ -2,14 +2,15 @@
 using Microsoft.Data.SqlClient;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
+using HOLIDAY_WEB_API.data_access;
 
 namespace HOLIDAY_WEB_API.Services
 {
     public class AuthDL : IAuthDL
     {
-        private readonly SignUpInDbContext _context;
+        private readonly UserDbContext _context;
 
-        public AuthDL(YourDbContext context)
+        public AuthDL(UserDbContext context)
         {
             _context = context;
         }
@@ -21,9 +22,8 @@ namespace HOLIDAY_WEB_API.Services
             response.Message = "Successful";
             try
             {
-                UserDetail user = await _context.UserDetails.FirstOrDefaultAsync(u =>
-                    u.UserName == request.UserName && u.PassWord == request.Password && u.Role == request.Role);
-
+                User user = await _context.Users.FirstOrDefaultAsync(u =>
+                    u.UserName == request.UserName && u.Password == request.Password && u.Role == request.Role);
                 if (user != null)
                 {
                     response.Message = "Login Successfully";
@@ -50,21 +50,21 @@ namespace HOLIDAY_WEB_API.Services
             response.Message = "Successful";
             try
             {
-                if (!request.Password.Equals(request.ConfigPassword))
+                if (!request.Password.Equals(request.ConfirmPassword))
                 {
                     response.IsSuccess = false;
                     response.Message = "Password & Confirm Password not Match";
                     return response;
                 }
 
-                UserDetail user = new UserDetail
+                User user = new User
                 {
                     UserName = request.UserName,
-                    PassWord = request.Password,
+                    Password = request.Password,
                     Role = request.Role
                 };
 
-                _context.UserDetails.Add(user);
+                _context.Users.Add(user);
                 int status = await _context.SaveChangesAsync();
 
                 if (status <= 0)
