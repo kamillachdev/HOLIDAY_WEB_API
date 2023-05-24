@@ -4,8 +4,8 @@ namespace HOLIDAY_WEB_API.Services
 {
     public interface IAuthDL
     {
-        public Task<SignUpResponse> SignUp(SignUpRequest request);
+        public Task<BaseResponse> SignUp(SignUpRequest request);
 
-        public Task<SignInResponse> SignIn(SignInRequest request);
+        public Task<BaseResponse> SignIn(SignInRequest request);
     }
 }

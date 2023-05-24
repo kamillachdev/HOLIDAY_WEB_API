@@ -1,5 +1,4 @@
-﻿using Microsoft.Identity.Client;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HOLIDAY_WEB_API.Models
 {
@@ -11,11 +10,5 @@ namespace HOLIDAY_WEB_API.Models
         public string Password { get; set; }
         [Required]
         public string Role { get; set; }
-    }
-
-    public class SignInResponse
-    {
-        public bool IsSuccess { get; set; }
-        public string Message { get; set; }
     }
 }

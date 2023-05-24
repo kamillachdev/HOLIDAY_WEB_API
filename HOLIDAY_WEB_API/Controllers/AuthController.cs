@@ -1,4 +1,5 @@
-﻿using HOLIDAY_WEB_API.Models;
+﻿using Azure;
+using HOLIDAY_WEB_API.Models;
 using HOLIDAY_WEB_API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +19,15 @@ namespace HOLIDAY_WEB_API.Controllers
         [HttpPost]
         public async Task<ActionResult> SignUp(SignUpRequest request)
         {
-            SignUpResponse response = new SignUpResponse();
+            BaseResponse response = new BaseResponse();
             try
             {
                 response = await _authDL.SignUp(request);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.Message = ex.Message;
+                response.Success = false;
+                response.Errors.Add(ex.Message);
             }
 
             return Ok(response);
@@ -35,15 +36,15 @@ namespace HOLIDAY_WEB_API.Controllers
         [HttpPost]
         public async Task<ActionResult> SignIn(SignInRequest request)
         {
-            SignInResponse response = new SignInResponse();
+            BaseResponse response = new BaseResponse();
             try
             {
                 response = await _authDL.SignIn(request);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.Message = ex.Message;
+                response.Success = false;
+                response.Errors.Add(ex.Message);
             }
 
             return Ok(response);

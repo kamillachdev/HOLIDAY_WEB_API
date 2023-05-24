@@ -13,10 +13,4 @@ namespace HOLIDAY_WEB_API.Models
         [Required]
         public string Role { get; set; }
     }
-
-    public class SignUpResponse
-    {
-        public bool IsSuccess { get; set; }
-        public string Message { get; set; }
-    }
 }

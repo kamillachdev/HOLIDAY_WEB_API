@@ -15,69 +15,44 @@ namespace HOLIDAY_WEB_API.Services
             _context = context;
         }
 
-        public async Task<SignInResponse> SignIn(SignInRequest request)
+        public async Task<BaseResponse> SignIn(SignInRequest request)
         {
-            SignInResponse response = new SignInResponse();
-            response.IsSuccess = true;
-            response.Message = "Successful";
-            try
-            {
-                User user = await _context.Users.FirstOrDefaultAsync(u =>
+            User? user = await _context.Users.FirstOrDefaultAsync(u =>
                     u.UserName == request.UserName && u.Password == request.Password && u.Role == request.Role);
-                if (user != null)
-                {
-                    response.Message = "Login Successfully";
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Message = "Login Unsuccessfully";
-                }
-            }
-            catch (Exception ex)
+
+
+            if (user == null)
             {
-                response.IsSuccess = false;
-                response.Message = ex.Message;
+                return new BaseResponse("Login Unsuccessfully");
             }
+
+            var response = new BaseResponse();
 
             return response;
         }
 
-        public async Task<SignUpResponse> SignUp(SignUpRequest request)
+        public async Task<BaseResponse> SignUp(SignUpRequest request)
         {
-            SignUpResponse response = new SignUpResponse();
-            response.IsSuccess = true;
-            response.Message = "Successful";
-            try
+            if (!request.Password.Equals(request.ConfirmPassword))
             {
-                if (!request.Password.Equals(request.ConfirmPassword))
-                {
-                    response.IsSuccess = false;
-                    response.Message = "Password & Confirm Password not Match";
-                    return response;
-                }
-
-                User user = new User
-                {
-                    UserName = request.UserName,
-                    Password = request.Password,
-                    Role = request.Role
-                };
-
-                _context.Users.Add(user);
-                int status = await _context.SaveChangesAsync();
-
-                if (status <= 0)
-                {
-                    response.IsSuccess = false;
-                    response.Message = "Something Went Wrong";
-                }
+                 return new BaseResponse("Password & Confirm Password not Match");
             }
-            catch (Exception ex)
+
+            User user = new User
             {
-                response.IsSuccess = false;
-                response.Message = ex.Message;
+                 UserName = request.UserName,
+                 Password = request.Password,
+                 Role = request.Role
+            };
+
+            _context.Users.Add(user);
+            int status = await _context.SaveChangesAsync();
+
+            if (status <= 0)
+            {
+                 return new BaseResponse("Something Went Wrong");
             }
+            BaseResponse response = new BaseResponse();
 
             return response;
         }
