@@ -10,5 +10,7 @@ namespace HOLIDAY_WEB_API.Models
         public string Password { get; set; }
         [Required]
         public string Role { get; set; }
+        [Required]
+        public string Email { get; set; }
     }
 }

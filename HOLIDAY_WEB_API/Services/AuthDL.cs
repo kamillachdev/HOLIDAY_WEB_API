@@ -18,7 +18,7 @@ namespace HOLIDAY_WEB_API.Services
         public async Task<BaseResponse> SignIn(SignInRequest request)
         {
             User? user = await _context.Users.FirstOrDefaultAsync(u =>
-                    u.UserName == request.UserName && u.Password == request.Password && u.Role == request.Role);
+                    u.UserName == request.UserName && u.Email == request.Email && u.Password == request.Password && u.Role == request.Role);
 
 
             if (user == null)
@@ -33,16 +33,12 @@ namespace HOLIDAY_WEB_API.Services
 
         public async Task<BaseResponse> SignUp(SignUpRequest request)
         {
-            if (!request.Password.Equals(request.ConfirmPassword))
-            {
-                 return new BaseResponse("Password & Confirm Password not Match");
-            }
-
             User user = new User
             {
                  UserName = request.UserName,
                  Password = request.Password,
-                 Role = request.Role
+                 Role = request.Role,
+                 Email = request.Email
             };
 
             _context.Users.Add(user);
