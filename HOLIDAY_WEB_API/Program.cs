@@ -17,9 +17,11 @@ namespace HOLIDAY_WEB_API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<UserDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("UserConnection")));
+
+            builder.Services.AddDbContext<UserDbContext>();
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<IRequestServices, RequestServices>();
+            builder.Services.AddScoped<IAuthDL, AuthDL>();
 
             var provider = builder.Services.BuildServiceProvider();
             var configuration = provider.GetRequiredService<IConfiguration>();  
