@@ -17,5 +17,16 @@ namespace HOLIDAY_WEB_API.Services
             var requests = _dbCOntext.Requests.ToList();
             return requests;
         }
+
+        public void CreateRequest(Request request) 
+        {
+            if (request == null) 
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            _dbCOntext.Requests.Add(request);
+            _dbCOntext.SaveChanges();
+        }
     }
 }

@@ -13,10 +13,16 @@ namespace HOLIDAY_WEB_API.Controllers
             _userServices = userServices;
         }
         [HttpGet]
-        [Route("allUsers")]
-        public IActionResult GetAllUsers() {
-            var result = _userServices.GetAllUsers();
-            return Ok(result);
+        [Route("getUser")]
+        public IActionResult GetUser(string email, string password) 
+        {
+            var user = _userServices.GetUserByEmail(email, password);
+            if(user == null) 
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
+
     }
 }

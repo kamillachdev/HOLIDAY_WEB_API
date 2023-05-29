@@ -4,6 +4,6 @@ namespace HOLIDAY_WEB_API.Services
 {
     public interface IUserServices
     {
-        public List<User> GetAllUsers();
+        public User GetUserByEmail(string email, string password);
     }
 }

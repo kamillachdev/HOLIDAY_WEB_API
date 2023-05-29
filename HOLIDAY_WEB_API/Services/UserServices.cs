@@ -11,10 +11,10 @@ namespace HOLIDAY_WEB_API.Services
             _dbCOntext = dbContext;
         }
 
-        List<User> IUserServices.GetAllUsers()
+        public User GetUserByEmail(string email, string password)
         {
-            var users =  _dbCOntext.Users.ToList();
-            return users;
+            var user =  _dbCOntext.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
+            return user;
         }
     }
 }
