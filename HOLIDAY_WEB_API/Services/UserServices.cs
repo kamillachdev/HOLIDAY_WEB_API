@@ -1,4 +1,5 @@
 ﻿using HOLIDAY_WEB_API.data_access;
+using HOLIDAY_WEB_API.Interfaces;
 using HOLIDAY_WEB_API.Models;
 
 namespace HOLIDAY_WEB_API.Services

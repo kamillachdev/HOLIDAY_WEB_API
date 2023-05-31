@@ -1,6 +1,6 @@
 ﻿using Azure;
+using HOLIDAY_WEB_API.Interfaces;
 using HOLIDAY_WEB_API.Models;
-using HOLIDAY_WEB_API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

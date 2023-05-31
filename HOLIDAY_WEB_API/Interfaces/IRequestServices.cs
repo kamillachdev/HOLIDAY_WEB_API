@@ -1,6 +1,6 @@
 ﻿using HOLIDAY_WEB_API.Models;
 
-namespace HOLIDAY_WEB_API.Services
+namespace HOLIDAY_WEB_API.Interfaces
 {
     public interface IRequestServices
     {

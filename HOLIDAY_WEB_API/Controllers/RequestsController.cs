@@ -1,5 +1,6 @@
-﻿using HOLIDAY_WEB_API.Models;
-using HOLIDAY_WEB_API.Services;
+﻿using HOLIDAY_WEB_API.Interfaces;
+using HOLIDAY_WEB_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 
@@ -7,6 +8,7 @@ namespace HOLIDAY_WEB_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RequestsController : ControllerBase
     {
         private readonly IRequestServices _requestServices;
@@ -18,6 +20,7 @@ namespace HOLIDAY_WEB_API.Controllers
 
         [HttpGet]
         [Route("allRequests")]
+        [Authorize]
         public IActionResult GetAllUsers()
         {
             var result = _requestServices.GetAllRequests();
@@ -26,6 +29,7 @@ namespace HOLIDAY_WEB_API.Controllers
 
         [HttpPost]
         [Route("createRequest")]
+        [Authorize]
         public IActionResult CreateRequest([FromBody] Request request)
         {
             try
