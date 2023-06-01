@@ -3,22 +3,24 @@
     public class BaseResponse
 
     {
-        public List<string> Errors { get; set; }
+        public List<string> Errors { get; set; } = new List<string>();
 
-        public bool Success { get; set; }
+        public bool Success() { 
+            return !Errors.Any();
+        }
 
         public BaseResponse() { 
-            Success = true;
-            Errors = new List<string>();
         }
 
         public BaseResponse(string error)
         {
-            Success = false;
-            Errors = new List<string>();
-
             Errors.Add(error);
         }
 
+        public BaseResponse(Exception exception)
+        {
+            Errors.Add(exception.Message);
+        }
     }
+
 }

@@ -26,7 +26,6 @@ namespace HOLIDAY_WEB_API.Controllers
             }
             catch (Exception ex)
             {
-                response.Success = false;
                 response.Errors.Add(ex.Message);
             }
 
@@ -43,7 +42,6 @@ namespace HOLIDAY_WEB_API.Controllers
             }
             catch (Exception ex)
             {
-                response.Success = false;
                 response.Errors.Add(ex.Message);
             }
 

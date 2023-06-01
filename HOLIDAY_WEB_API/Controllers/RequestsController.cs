@@ -2,38 +2,47 @@
 using HOLIDAY_WEB_API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 
 namespace HOLIDAY_WEB_API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class RequestsController : ControllerBase
     {
         private readonly IRequestServices _requestServices;
 
-        public RequestsController(IRequestServices requestServices, IRequestServices cre)
+        public RequestsController(IRequestServices requestServices)
         {
             _requestServices = requestServices;
         }
 
         [HttpGet]
         [Route("allRequests")]
-        [Authorize]
-        public IActionResult GetAllUsers()
+        public IActionResult GetAllRequests()
         {
+            // Check if a valid token is present
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized("Invalid token");
+            }
+
             var result = _requestServices.GetAllRequests();
             return Ok(result);
         }
 
         [HttpPost]
         [Route("createRequest")]
-        [Authorize]
         public IActionResult CreateRequest([FromBody] Request request)
         {
             try
             {
+                // Check if a valid token is present
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized("Invalid token");
+                }
+
                 if (request == null)
                 {
                     return BadRequest("Invalid request data");
@@ -48,6 +57,5 @@ namespace HOLIDAY_WEB_API.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-
     }
 }

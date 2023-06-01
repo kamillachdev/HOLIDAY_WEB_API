@@ -70,6 +70,7 @@ public class AuthorizationUser : IAuthorizationUser
         SecurityToken token = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
         string tokenString = jwtSecurityTokenHandler.WriteToken(token);
 
+        Console.WriteLine($"Generated token: {tokenString}");
         return tokenString;
     }
 
@@ -104,6 +105,7 @@ public class AuthorizationUser : IAuthorizationUser
             HttpOnly = true,
             Expires = DateTime.Now.AddMinutes(cookieExpiresMinutes),
             SameSite = SameSiteMode.None
+
         });
     }
 

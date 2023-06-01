@@ -5,18 +5,24 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HOLIDAY_WEB_API.Exceptions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace HOLIDAY_WEB_API
 {
-
-    /*tokeny, ciastka do implementacji:
-     * https://github.com/arekbor/stockband-api/blob/master/Stockband.Api/Services/AuthorizationUser.cs
-    */
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add configuration
+            builder.Configuration.AddJsonFile("appsettings.json");
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -34,31 +40,34 @@ namespace HOLIDAY_WEB_API
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
-                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtKey"]!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtKey"])),
                     ValidateIssuer = true,
-                    ValidIssuer = builder.Configuration["JwtIssuer"],
+                    ValidIssuer = configuration["JwtIssuer"],
                     ValidateAudience = true,
-                    ValidAudience = builder.Configuration["JwtAudience"],
+                    ValidAudience = configuration["JwtAudience"],
                 };
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = ctx =>
                     {
-                        string? cookieName = builder.Configuration["CookieName"];
+                        string? cookieName = configuration["CookieName"];
                         if (cookieName == null)
                         {
                             throw new ObjectNotFound(nameof(cookieName));
                         }
 
-                        ctx.Token = ctx.Request.Cookies[cookieName];
+                        var token = ctx.Request.Cookies[cookieName];
+                        Console.WriteLine($"Token received: {token}");
+                        ctx.Token = token;
+
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = ctx =>
@@ -77,7 +86,10 @@ namespace HOLIDAY_WEB_API
 
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+                    builder.WithOrigins(frontendURL)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 });
             });
 
@@ -90,16 +102,16 @@ namespace HOLIDAY_WEB_API
                 app.UseSwaggerUI();
             }
 
+            app.UseRouting();
+
             app.UseCors();
 
-            app.UseAuthorization();
             app.UseAuthentication();
-
+            app.UseAuthorization();
 
             app.MapControllers();
 
             app.Run();
-
         }
     }
 }
