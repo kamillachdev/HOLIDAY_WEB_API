@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace HOLIDAY_WEB_API
 {
@@ -66,6 +67,29 @@ namespace HOLIDAY_WEB_API
 
                         var token = ctx.Request.Cookies[cookieName];
                         Console.WriteLine($"Token received: {token}");
+
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            // Parse the token using JwtSecurityTokenHandler
+                            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+                            var jwtSecurityToken = jwtSecurityTokenHandler.ReadJwtToken(token);
+
+                            var algorithm = jwtSecurityToken.Header.Alg;
+
+                            // Check if the algorithm is HMAC with SHA-256
+                            if (algorithm.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                var keyBytes = Convert.FromBase64String(configuration["JwtKey"]);
+                                var securityKey = new SymmetricSecurityKey(keyBytes);
+
+                                // Ensure the key size is at least 256 bits
+                                if (securityKey.KeySize < 256)
+                                {
+                                    throw new ArgumentOutOfRangeException("The key size must be at least 256 bits.");
+                                }
+                            }
+                        }
+
                         ctx.Token = token;
 
                         return Task.CompletedTask;

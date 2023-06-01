@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using HOLIDAY_WEB_API.Exceptions;
 using HOLIDAY_WEB_API.Interfaces;
@@ -51,15 +52,21 @@ public class AuthorizationUser : IAuthorizationUser
             throw new FormatException();
         }
 
-        byte[] keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+        // Generate a secure key with a key size of 256 bits
+        byte[] keyBytes = new byte[256 / 8];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(keyBytes);
+        }
+
         SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                new (ClaimTypes.NameIdentifier, userId),
-                new (ClaimTypes.Name, username),
-                new (ClaimTypes.Email, email),
-                new (ClaimTypes.Role, role)
+                    new (ClaimTypes.NameIdentifier, userId),
+                    new (ClaimTypes.Name, username),
+                    new (ClaimTypes.Email, email),
+                    new (ClaimTypes.Role, role)
             }),
             Expires = DateTime.Now.AddMinutes(cookieExpiresMinutes),
             Audience = jwtAudience,
@@ -72,41 +79,6 @@ public class AuthorizationUser : IAuthorizationUser
 
         Console.WriteLine($"Generated token: {tokenString}");
         return tokenString;
-    }
-
-    public void AddJwtCookie(string jwtToken)
-    {
-        string? cookieName = _configuration["CookieName"];
-        if (cookieName == null)
-        {
-            throw new ObjectNotFound(nameof(cookieName));
-        }
-
-        string? cookieExpires = _configuration["CookieExpires"];
-        if (cookieExpires == null)
-        {
-            throw new ObjectNotFound(nameof(cookieExpires));
-        }
-
-        bool success = double.TryParse(cookieExpires, out double cookieExpiresMinutes);
-        if (!success)
-        {
-            throw new FormatException();
-        }
-
-        HttpContext? httpContext = _httpContextAccessor.HttpContext;
-        if (httpContext == null)
-        {
-            throw new ObjectNotFound(typeof(HttpContext));
-        }
-
-        httpContext.Response.Cookies.Append(cookieName, jwtToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = DateTime.Now.AddMinutes(cookieExpiresMinutes),
-            SameSite = SameSiteMode.None
-
-        });
     }
 
     public void ClearJwtCookie()
