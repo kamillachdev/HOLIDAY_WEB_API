@@ -37,15 +37,36 @@ namespace HOLIDAY_WEB_API.Controllers
 
             string jwtToken = _authorizationUser.CreateJwt(userId, username, userEmail, userRole);
 
-            Response.Cookies.Append("test", "test");
+            var cookieName = _configuration["CookieName"];
+            var cookieExpires = _configuration["CookieExpires"];
 
-            // Add JWT token as a cookie
-            Response.Cookies.Append(_configuration["CookieName"], jwtToken, new CookieOptions
+            if (cookieName == null)
+            {
+                throw new Exception("Cookie name not found in configuration file.");
+            }
+            if (cookieExpires == null)
+            {
+                throw new Exception("Cookie expiraton time not found in configuration file.");
+            }
+
+            var success = double.TryParse(cookieExpires, out var parsedCookieExpires);
+            if (!success)
+            {
+                throw new FormatException();
+            }
+
+            var userAgent = Request.Headers["User-Agent"].ToString();
+            bool isSameSiteNoneCompatible = userAgent.Contains("Chrome") || userAgent.Contains("Firefox") || userAgent.Contains("Safari") || userAgent.Contains("Opera");
+
+            var cookieSettings = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.Now.AddMinutes(double.Parse(_configuration["CookieExpires"])),
-                SameSite = SameSiteMode.None
-            });
+                Expires = DateTime.Now.AddMinutes(parsedCookieExpires),
+                Secure = true,
+                SameSite = isSameSiteNoneCompatible ? SameSiteMode.None : SameSiteMode.Lax
+            };
+
+            Response.Cookies.Append(cookieName, jwtToken, cookieSettings); //SAMESITE IS CAUSING ERROR
 
             return Ok(user);
         }
