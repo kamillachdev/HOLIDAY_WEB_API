@@ -6,6 +6,7 @@ using HOLIDAY_WEB_API.Exceptions;
 using HOLIDAY_WEB_API.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
+
 namespace HOLIDAY_WEB_API.Services;
 
 public class AuthorizationUser : IAuthorizationUser
@@ -53,11 +54,7 @@ public class AuthorizationUser : IAuthorizationUser
         }
 
         // Generate a secure key with a key size of 256 bits
-        byte[] keyBytes = new byte[256 / 8];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(keyBytes);
-        }
+        byte[] keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
         SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
         {
@@ -77,7 +74,6 @@ public class AuthorizationUser : IAuthorizationUser
         SecurityToken token = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
         string tokenString = jwtSecurityTokenHandler.WriteToken(token);
 
-        Console.WriteLine($"Generated token: {tokenString}");
         return tokenString;
     }
 
@@ -119,10 +115,5 @@ public class AuthorizationUser : IAuthorizationUser
         }
 
         return parsedId;
-    }
-
-    public void AddJwTCookie(string jwTCookie)
-    {
-        throw new NotImplementedException();
     }
 }

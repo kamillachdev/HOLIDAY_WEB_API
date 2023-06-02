@@ -66,7 +66,7 @@ namespace HOLIDAY_WEB_API.Controllers
                 SameSite = isSameSiteNoneCompatible ? SameSiteMode.None : SameSiteMode.Lax
             };
 
-            Response.Cookies.Append(cookieName, jwtToken, cookieSettings); //SAMESITE IS CAUSING ERROR
+            Response.Cookies.Append(cookieName, jwtToken, cookieSettings);
 
             return Ok(user);
         }

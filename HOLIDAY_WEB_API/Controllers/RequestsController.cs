@@ -21,12 +21,6 @@ namespace HOLIDAY_WEB_API.Controllers
         [Route("allRequests")]
         public IActionResult GetAllRequests()
         {
-            // Check if a valid token is present
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized("Invalid token");
-            }
-
             var result = _requestServices.GetAllRequests();
             return Ok(result);
         }
@@ -37,12 +31,6 @@ namespace HOLIDAY_WEB_API.Controllers
         {
             try
             {
-                // Check if a valid token is present
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized("Invalid token");
-                }
-
                 if (request == null)
                 {
                     return BadRequest("Invalid request data");

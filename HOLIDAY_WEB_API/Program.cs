@@ -36,7 +36,6 @@ namespace HOLIDAY_WEB_API
             builder.Services.AddScoped<IAuthDL, AuthDL>();
 
             var provider = builder.Services.BuildServiceProvider();
-            var configuration = provider.GetRequiredService<IConfiguration>();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -49,49 +48,23 @@ namespace HOLIDAY_WEB_API
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtKey"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtKey"]!)),
                     ValidateIssuer = true,
-                    ValidIssuer = configuration["JwtIssuer"],
+                    ValidIssuer = builder.Configuration["JwtIssuer"],
                     ValidateAudience = true,
-                    ValidAudience = configuration["JwtAudience"],
+                    ValidAudience = builder.Configuration["JwtAudience"],
                 };
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = ctx =>
                     {
-                        string? cookieName = configuration["CookieName"];
+                        string? cookieName = builder.Configuration["CookieName"];
                         if (cookieName == null)
                         {
                             throw new ObjectNotFound(nameof(cookieName));
                         }
 
-                        var token = ctx.Request.Cookies[cookieName];
-                        Console.WriteLine($"Token received: {token}");
-
-                        if (!string.IsNullOrEmpty(token))
-                        {
-                            // Parse the token using JwtSecurityTokenHandler
-                            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-                            var jwtSecurityToken = jwtSecurityTokenHandler.ReadJwtToken(token);
-
-                            var algorithm = jwtSecurityToken.Header.Alg;
-
-                            // Check if the algorithm is HMAC with SHA-256
-                            if (algorithm.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                var keyBytes = Convert.FromBase64String(configuration["JwtKey"]);
-                                var securityKey = new SymmetricSecurityKey(keyBytes);
-
-                                // Ensure the key size is at least 256 bits
-                                if (securityKey.KeySize < 256)
-                                {
-                                    throw new ArgumentOutOfRangeException("The key size must be at least 256 bits.");
-                                }
-                            }
-                        }
-
-                        ctx.Token = token;
-
+                        ctx.Token = ctx.Request.Cookies[cookieName];
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = ctx =>
@@ -106,7 +79,7 @@ namespace HOLIDAY_WEB_API
 
             builder.Services.AddCors(options =>
             {
-                var frontendURL = configuration.GetValue<string>("frontend_url");
+                var frontendURL = builder.Configuration.GetValue<string>("frontend_url");
 
                 options.AddDefaultPolicy(builder =>
                 {
@@ -116,7 +89,6 @@ namespace HOLIDAY_WEB_API
                         .AllowCredentials();
                 });
             });
-
 
             var app = builder.Build();
 
